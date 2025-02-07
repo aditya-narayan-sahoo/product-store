@@ -5,6 +5,7 @@ import morgan from "morgan";
 import express from "express";
 
 import { initDB } from "./config/db.js";
+import productRoutes from "./routes/product.routes.js";
 
 dotenv.config();
 const app = express();
@@ -16,6 +17,9 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(helmet()); // helmet is used to set security headers
 app.use(morgan("dev")); // morgan is used to log requests
+
+// routes
+app.use("/api/products", productRoutes);
 
 initDB().then(() => {
   app.listen(PORT, () => {
