@@ -4,10 +4,15 @@ import Navbar from "./components/Navbar";
 
 import Home from "./pages/Home";
 import Product from "./pages/Product";
+import { useThemeStore } from "./store/useThemeStore";
 
 const App = () => {
+  const { theme } = useThemeStore();
   return (
-    <div className="min-h-screen bg-base-200 transition-colors duration-300">
+    <div
+      className="min-h-screen bg-base-200 transition-colors duration-300"
+      data-theme={theme}
+    >
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
