@@ -1,3 +1,4 @@
+import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
@@ -11,13 +12,18 @@ import productRoutes from "./routes/product.routes.js";
 dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5432;
+const __dirname = path.resolve();
 
 // middlewares
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(helmet()); // helmet is used to set security headers
-app.use(morgan("dev")); // morgan is used to log requests
+app.use(
+  helmet({
+    contentSecurityPolicy: false,
+  })
+);
+app.use(morgan("dev"));
 
 // arcjet rate limiting
 app.use(async (req, res, next) => {
@@ -53,6 +59,14 @@ app.use(async (req, res, next) => {
 
 // routes
 app.use("/api/products", productRoutes);
+
+// deployment config
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "/frontend/dist")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+  });
+}
 
 initDB().then(() => {
   app.listen(PORT, () => {
